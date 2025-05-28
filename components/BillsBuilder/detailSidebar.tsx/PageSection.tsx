@@ -1,11 +1,20 @@
 "use client";
-import * as React from "react";
 import { DropdownField } from "./DropdownField";
 import { CheckboxField } from "./CheckboxField";
 import { InputField } from "./InputField";
 import { ImageUploadField } from "./ImageUploadField";
+import { useState } from "react";
 
 export const PageSection: React.FC = () => {
+  const [selectedSize, setSelectedSize] = useState("A4 (21 * 29.7)");
+  const [username, setUsername] = useState("BadrAlDeen");
+
+  const pageSizes = [
+    { label: "B5 (20 * 15)", value: "B5 (20 * 15)" },
+    { label: "A4 (21 * 29.7)", value: "A4 (21 * 29.7)" },
+    { label: "A5 (14.8 * 21)", value: "A5 (14.8 * 21)" },
+  ];
+
   return (
     <section className="w-full">
       <header className="gap-2.5 self-stretch w-full text-base font-medium whitespace-nowrap text-slate-500">
@@ -13,9 +22,10 @@ export const PageSection: React.FC = () => {
       </header>
       <div className="mt-2.5 w-full">
         <DropdownField
-          label="حجم الصفحة"
-          value="B5 (20 * 15)"
-          iconSrc="https://cdn.builder.io/api/v1/image/assets/736c0c0d10f140b89dedb00707aaec25/1d4f8c14c016e7455389c524a68e769bb45f565d?placeholderIfAbsent=true"
+          label="Page Size"
+          value={selectedSize}
+          onChange={setSelectedSize}
+          options={pageSizes}
         />
         <CheckboxField
           className="mt-4"
@@ -25,8 +35,11 @@ export const PageSection: React.FC = () => {
         <InputField
           className="mt-4"
           label="المستخدمين"
-          value=""
+          value={username}
+          readOnly={false}
+          onChange={(e) => setUsername(e.target.value)}
         />
+
         <ImageUploadField
           className="mt-4"
           label="صورة الخلفية"
