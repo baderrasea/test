@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl">
-      <body className="w-[1920px] min-w-[1920px] max-w-[1920px] h-[1080px] p-[10px] m-auto box-border relative">
+      <body className="">
         {children}
       </body>
     </html>
