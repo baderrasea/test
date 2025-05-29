@@ -31,14 +31,22 @@ const DraggableElement: React.FC<DraggableElementProps> = ({ id, type, label }) 
       {...listeners}
       {...attributes}
       className={`
-        flex items-center gap-3 p-3 bg-white border border-secondary-200 rounded-lg cursor-grab
-        hover:border-primary-300 hover:shadow-sm transition-all duration-200 font-arabic
-        ${isDragging ? 'opacity-50 rotate-2' : ''}
-      `}
+    flex gap-[10px] items-center w-full h-[64px] bg-white px-4 py-2 
+    rounded-lg cursor-all-scroll
+    hover:border-primary-300 hover:shadow-sm transition-all duration-200
+    ${isDragging ? 'opacity-50 ' : ''}
+  `}
     >
-      <Icon className="w-5 h-5 text-secondary-600" />
-      <span className="text-sm-medium text-secondary-700">{label}</span>
+      <div className="w-10 h-10 flex items-center justify-center rounded-[10px] p-[10px] bg-[#D3DBE4] gap-[10px] text-sm font-semibold">
+        <Icon className="w-5 h-5 text-secondary-600" />
+      </div>
+      <div className="flex flex-col text-right">
+        <span className="text-[14px] font-medium text-[#374151]">{label}</span>
+        <span className="text-[12px] text-[#9CA3AF]">حقل {type === 'text' ? 'رقم' : type === 'date' ? 'تاريخ' : type === 'image' ? 'صورة' : type === 'dropdown' ? 'قائمة' : 'خانة'}</span>
+      </div>
+
     </div>
+
   );
 };
 
