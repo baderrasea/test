@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ar" dir="rtl">
-      <body className="">
+      <body className="font-arabic">
         {children}
       </body>
     </html>

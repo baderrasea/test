@@ -1,2 +1,4 @@
 @import "tailwindcss";
-
+body {
+    font-family: "Expo Arabic", "Cairo", "Arial", sans-serif;
+}
