@@ -1,21 +1,20 @@
-
 "use client";
 import { useState } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { useEditorStore } from '@/store/editorStore';
 import { TemplateElement } from '@/store/editorStore';
-import { Type, Calendar, Image, ChevronDown, CheckSquare, RotateCw, RotateCcw } from 'lucide-react';
+import { Type, Calendar, Image as LucideImage, ChevronDown, CheckSquare, RotateCw, RotateCcw } from 'lucide-react';
 
 interface CanvasElementProps {
   element: TemplateElement;
 }
 
 const CanvasElement: React.FC<CanvasElementProps> = ({ element }) => {
-  const { selectElement, updateElement, selectedElementId } = useEditorStore();
+  const { selectElement, updateElement, selectedElementId, templateProperties } = useEditorStore();
   const [isResizing, setIsResizing] = useState(false);
   const [isDraggingElement, setIsDraggingElement] = useState(false);
   
-  const { attributes, listeners, setNodeRef, isDragging, transform } = useDraggable({
+  const { setNodeRef } = useDraggable({
     id: `canvas-${element.id}`,
     data: { element },
     disabled: element.isLocked,
@@ -41,14 +40,15 @@ const CanvasElement: React.FC<CanvasElementProps> = ({ element }) => {
     const startY = e.clientY;
     const startElementX = element.x;
     const startElementY = element.y;
+    // Get dynamic canvas size from Zustand
+    const canvasWidth = templateProperties.canvasWidth || 750;
+    const canvasHeight = templateProperties.canvasHeight || 550;
 
     const handleMouseMove = (e: MouseEvent) => {
       const deltaX = e.clientX - startX;
       const deltaY = e.clientY - startY;
-      
-      const newX = Math.max(0, Math.min(750 - element.width, startElementX + deltaX));
-      const newY = Math.max(0, Math.min(550 - element.height, startElementY + deltaY));
-
+      const newX = Math.max(0, Math.min(canvasWidth - element.width, startElementX + deltaX));
+      const newY = Math.max(0, Math.min(canvasHeight - element.height, startElementY + deltaY));
       updateElement(element.id, {
         x: newX,
         y: newY,
@@ -75,21 +75,21 @@ const CanvasElement: React.FC<CanvasElementProps> = ({ element }) => {
     const startY = e.clientY;
     const startWidth = element.width;
     const startHeight = element.height;
+    // Get dynamic canvas size from Zustand
+    const canvasWidth = templateProperties.canvasWidth || 750;
+    const canvasHeight = templateProperties.canvasHeight || 550;
 
     const handleMouseMove = (e: MouseEvent) => {
       const deltaX = e.clientX - startX;
       const deltaY = e.clientY - startY;
-
       let newWidth = startWidth;
       let newHeight = startHeight;
-
       if (direction.includes('right')) {
-        newWidth = Math.max(50, startWidth + deltaX);
+        newWidth = Math.max(50, Math.min(canvasWidth - element.x, startWidth + deltaX));
       }
       if (direction.includes('bottom')) {
-        newHeight = Math.max(30, startHeight + deltaY);
+        newHeight = Math.max(30, Math.min(canvasHeight - element.y, startHeight + deltaY));
       }
-
       updateElement(element.id, {
         width: newWidth,
         height: newHeight,
@@ -161,7 +161,7 @@ const CanvasElement: React.FC<CanvasElementProps> = ({ element }) => {
       case 'image':
         return (
           <div className={`${baseClasses} bg-success-50 border-success-300`}>
-            <Image className="w-4 h-4 ml-2 text-success-600" />
+            <LucideImage className="w-4 h-4 ml-2 text-success-600" />
             <span className="text-success-700">{element.properties.label}</span>
           </div>
         );

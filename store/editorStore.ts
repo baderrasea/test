@@ -30,6 +30,8 @@ export interface TemplateProperties {
   pageSize: string;
   orientation: string;
   backgroundImage?: string; // Add backgroundImage to store image data
+  canvasWidth?: number;
+  canvasHeight?: number;
 }
 
 interface EditorState {
@@ -59,6 +61,8 @@ const initialTemplateProperties: TemplateProperties = {
   pageSize: 'A4',
   orientation: 'Portrait',
   backgroundImage: '', // Initialize backgroundImage
+  canvasWidth: 750,
+  canvasHeight: 550,
 };
 
 export const useEditorStore = create(

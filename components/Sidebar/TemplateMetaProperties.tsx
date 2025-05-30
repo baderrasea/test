@@ -101,6 +101,22 @@ const TemplateMetaProperties: React.FC = () => {
         }
       />
 
+      <LabeledSelect
+        id="canvasSize"
+        label="حجم مساحة العمل"
+        value={`${templateProperties.canvasWidth}x${templateProperties.canvasHeight}`}
+        onChange={(value) => {
+          const [w, h] = value.split('x').map(Number);
+          updateTemplateProperties({ canvasWidth: w, canvasHeight: h });
+        }}
+        options={[
+          { value: "750x550", label: "افتراضي (A4) 750x550" },
+          { value: "900x600", label: "كبير 900x600" },
+          { value: "600x400", label: "صغير 600x400" },
+          { value: "1200x800", label: "عريض 1200x800" },
+        ]}
+      />
+
       <div>
         <p className="text-sm-medium text-[#535862] font-expo-arabic text-right block mb-2">
           صورة الخلفية

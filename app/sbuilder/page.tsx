@@ -12,8 +12,8 @@ import { ImagesGroup } from '@/components/ImagesGroup';
 import Image from "next/image";
 
 const Builder = () => {
-  const { addElement } = useEditorStore();
-  const [activeDrag, setActiveDrag] = React.useState<any>(null);
+  const { addElement, templateProperties } = useEditorStore();
+  const [activeDrag, setActiveDrag] = React.useState<DragStartEvent['active'] | null>(null);
 
   const handleDragStart = (event: DragStartEvent) => {
     setActiveDrag(event.active);
@@ -28,6 +28,9 @@ const Builder = () => {
 
       if (canvasElement) {
         const canvasRect = canvasElement.getBoundingClientRect();
+        // Get dynamic canvas size from Zustand
+        const canvasWidth = templateProperties.canvasWidth || 750;
+        const canvasHeight = templateProperties.canvasHeight || 550;
 
         // Get the drop position from the drag end event
         const dropEvent = event.activatorEvent as PointerEvent;
@@ -50,9 +53,9 @@ const Builder = () => {
 
         const dimensions = defaultDimensions[elementType as keyof typeof defaultDimensions];
 
-        // Ensure element stays within canvas bounds
-        const finalX = Math.min(dropX, 750 - dimensions.width);
-        const finalY = Math.min(dropY, 550 - dimensions.height);
+        // Ensure element stays within dynamic canvas bounds
+        const finalX = Math.min(dropX, canvasWidth - dimensions.width);
+        const finalY = Math.min(dropY, canvasHeight - dimensions.height);
 
         addElement({
           type: elementType,
@@ -117,17 +120,21 @@ const Builder = () => {
         {/* Main Content */}
         <div className="flex-1 flex overflow-hidden gap-[24px] px-[20px] py-[24px]">
           {/* Right Sidebar - Elements & Layers */}
-          <ElementsPanel />
+          <div className="flex-shrink-0 w-80 min-w-[400px]">
+            <ElementsPanel />
+          </div>
 
           {/* Main Canvas Area */}
-          <div className="flex-1 flex flex-col">
-            <div className="flex-1">
+          <div className="flex-1 flex flex-col min-w-0 min-h-0">
+            <div className="flex-1 min-h-0 min-w-0 overflow-auto flex items-center justify-center">
               <TemplateCanvas />
             </div>
           </div>
 
           {/* Left Sidebar - Template Properties */}
-          <TemplateProperties />
+          <div className="flex-shrink-0 w-80 min-w-[400px]">
+            <TemplateProperties />
+          </div>
         </div>
 
         {/* Bottom Toolbar */}
