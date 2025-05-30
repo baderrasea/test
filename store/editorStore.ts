@@ -1,5 +1,5 @@
-
 import { create } from 'zustand';
+import { devtools } from 'zustand/middleware';
 
 export interface TemplateElement {
   id: string;
@@ -29,6 +29,7 @@ export interface TemplateProperties {
   users: string;
   pageSize: string;
   orientation: string;
+  backgroundImage?: string; // Add backgroundImage to store image data
 }
 
 interface EditorState {
@@ -57,9 +58,11 @@ const initialTemplateProperties: TemplateProperties = {
   users: '',
   pageSize: 'A4',
   orientation: 'Portrait',
+  backgroundImage: '', // Initialize backgroundImage
 };
 
-export const useEditorStore = create<EditorState>((set, get) => ({
+export const useEditorStore = create(
+  devtools<EditorState>((set, get) => ({
   elements: [],
   selectedElementId: null,
   templateProperties: initialTemplateProperties,
@@ -67,9 +70,14 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   historyIndex: 0,
 
   addElement: (element) => {
+    // Only generate ID on the client to avoid hydration issues
+    let id = '';
+    if (typeof window !== 'undefined') {
+      id = `element-${window.crypto?.randomUUID?.() || Math.random().toString(36).substr(2, 9)}`;
+    }
     const newElement: TemplateElement = {
       ...element,
-      id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      id,
       zIndex: get().elements.length,
       isLocked: false,
       isVisible: true,
@@ -78,12 +86,10 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         rotation: 0,
       },
     };
-    
     set((state) => ({
       elements: [...state.elements, newElement],
       selectedElementId: newElement.id,
     }));
-    
     get().saveToHistory();
   },
 
@@ -180,4 +186,5 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       historyIndex: 0,
     });
   },
-}));
+}), { name: 'EditorStore' })
+);

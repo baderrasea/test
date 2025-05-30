@@ -1,82 +1,140 @@
+// src/components/BottomToolbar.tsx
+"use client";
 
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { useEditorStore } from '@/store/editorStore';
-import { Undo, Redo, Save, RotateCcw } from 'lucide-react';
-import { toast } from 'sonner';
+import React, { MouseEvent } from "react";
+import { useEditorStore } from "@/store/editorStore";
+import { toast } from "sonner";
+import Image from "next/image";
+
+type Action = {
+  key: string;
+  iconPath: string;
+  onClick: () => void;
+  disabled?: boolean;
+  hoverBg?: string;
+  hoverText?: string;
+};
+
+const ICON_SIZE = 24;
+const BUTTON_SIZE = 44;
+const BASE_BUTTON_CLASSES = `
+  flex items-center justify-center
+  w-[${BUTTON_SIZE}px] h-[${BUTTON_SIZE}px]
+  bg-[#EBEEF3] border border-[#E5E7EB]
+  rounded-[10px] transition
+`;
 
 const BottomToolbar: React.FC = () => {
-  const { undo, redo, reset, history, historyIndex, elements } = useEditorStore();
-  
+  const { undo, redo, reset, history, historyIndex, elements } =
+    useEditorStore();
+
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
 
   const handleSave = () => {
-    toast.success('تم حفظ القالب بنجاح!');
-    console.log('Saving template with elements:', elements);
+    toast.success("تم حفظ القالب بنجاح!");
+    console.log("Saving template with elements:", elements);
   };
 
   const handleReset = () => {
-    if (elements.length > 0) {
-      const confirmed = window.confirm('هل أنت متأكد من الرغبة في إعادة التعيين؟ سيؤدي هذا إلى حذف جميع العناصر.');
-      if (confirmed) {
-        reset();
-        toast.info('تم إعادة تعيين القالب');
-      }
+    if (elements.length === 0) return;
+    const confirmed = window.confirm(
+      "هل أنت متأكد من الرغبة في إعادة التعيين؟ سيؤدي هذا إلى حذف جميع العناصر."
+    );
+    if (confirmed) {
+      reset();
+      toast.info("تم إعادة تعيين القالب");
     }
   };
 
+  const actions: Action[] = [
+    {
+      key: "redo",
+      iconPath: "/assets/icons/builder/redo.svg",
+      onClick: redo,
+      disabled: !canRedo,
+      hoverBg: "hover:bg-[#0071CB]",
+      hoverText: "hover:text-white",
+    },
+    {
+      key: "undo",
+      iconPath: "/assets/icons/builder/undo.svg",
+      onClick: undo,
+      disabled: !canUndo,
+      hoverBg: "hover:bg-[#0071CB]",
+      hoverText: "hover:text-white",
+    },
+    {
+      key: "edit",
+      iconPath: "/assets/icons/builder/Vector (Stroke)-1.svg",
+      onClick: () => { },
+      hoverBg: "hover:bg-[#0071CB]",
+      hoverText: "hover:text-black",
+    },
+    {
+      key: "view",
+      iconPath: "/assets/icons/builder/eye.svg",
+      onClick: () => { },
+      hoverBg: "hover:bg-[#0071CB]",
+      hoverText: "hover:text-white",
+    },
+    {
+      key: "save",
+      iconPath: "/assets/icons/builder/diskette.svg",
+      onClick: handleSave,
+      hoverBg: "hover:bg-[#0071CB]",
+      hoverText: "hover:text-black",
+    },
+    {
+      key: "reset",
+      iconPath: "/assets/icons/builder/cross.svg",
+      onClick: handleReset,
+      disabled: elements.length === 0,
+      hoverBg: "hover:bg-red-300",
+      hoverText: "hover:text-white",
+    },
+  ];
+
+  const stopDrag = (e: MouseEvent) => e.stopPropagation();
+
   return (
-    <div className="h-16 bg-white border-t border-secondary-200 flex items-center justify-center gap-4 px-6 font-arabic">
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={undo}
-          disabled={!canUndo}
-          className="flex items-center gap-2 border-secondary-200 text-secondary-700 hover:bg-secondary-50"
-        >
-          <Undo className="w-4 h-4" />
-          تراجع
-        </Button>
-        
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={redo}
-          disabled={!canRedo}
-          className="flex items-center gap-2 border-secondary-200 text-secondary-700 hover:bg-secondary-50"
-        >
-          <Redo className="w-4 h-4" />
-          إعادة
-        </Button>
-        
-        <div className="w-px h-6 bg-secondary-300 mx-2" />
-        
-        <Button
-          variant="default"
-          size="sm"
-          onClick={handleSave}
-          className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white"
-        >
-          <Save className="w-4 h-4" />
-          حفظ القالب
-        </Button>
-        
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={handleReset}
-          className="flex items-center gap-2 text-danger-600 hover:text-danger-700 border-danger-200 hover:bg-danger-50"
-        >
-          <RotateCcw className="w-4 h-4" />
-          إعادة تعيين
-        </Button>
-      </div>
-      
-      <div className="text-xs-medium text-secondary-500">
-        العناصر: {elements.length} | السجل: {historyIndex + 1}/{history.length}
-      </div>
+    <div
+      className="
+        fixed bottom-5 left-1/2 transform -translate-x-1/2
+        bg-white/90 backdrop-blur-sm shadow-lg rounded-[10px]
+        flex items-center gap-[10px] px-[20px] py-[5px]
+        z-50
+      "
+    >
+      {actions.map(
+        ({ key, iconPath, onClick, disabled, hoverBg, hoverText }) => (
+          <React.Fragment key={key}>
+            <button
+              onClick={onClick}
+              disabled={disabled}
+              onPointerDown={stopDrag}
+              className={`
+                ${BASE_BUTTON_CLASSES}
+                ${disabled ? "opacity-40 cursor-not-allowed" : ""}
+                ${hoverBg ?? ""} ${hoverText ?? ""}
+              `}
+            >
+              <Image
+                src={iconPath}
+                alt={`${key} icon`}
+                width={ICON_SIZE}
+                height={ICON_SIZE}
+              />
+            </button>
+            {key === "view" && (
+              <div
+                className="w-[36px] h-[2px] px-[4px] gap-[10px] transform rotate-[-90deg] border-2 border-[#E5E7EB]"
+                key="divider-after-view"
+              ></div>
+            )}
+          </React.Fragment>
+        )
+      )}
     </div>
   );
 };
