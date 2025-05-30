@@ -3,13 +3,14 @@
 import React from 'react';
 import { DndContext, DragEndEvent, DragOverlay, DragStartEvent } from '@dnd-kit/core';
 import TemplateProperties from '@/components/Sidebar/TemplateProperties';
-import TemplateCanvas from '@/components/Canvas/TemplateCanvas';
+import dynamic from "next/dynamic";
 import ElementsPanel from '@/components/Sidebar/ElementsPanel';
 import BottomToolbar from '@/components/Toolbar/BottomToolbar';
 import DraggableElement from '@/components/Sidebar/DraggableElement';
 import { useEditorStore } from '@/store/editorStore';
 import { ImagesGroup } from '@/components/ImagesGroup';
 import Image from "next/image";
+const TemplateCanvas = dynamic(() => import('@/components/Canvas/TemplateCanvas'), { ssr: false });
 
 const Builder = () => {
   const { addElement, templateProperties } = useEditorStore();
