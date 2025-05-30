@@ -40,7 +40,8 @@ interface EditorState {
   templateProperties: TemplateProperties;
   history: TemplateElement[][];
   historyIndex: number;
-  
+  thumbnail?: string;
+
   // Actions
   addElement: (element: Omit<TemplateElement, 'id' | 'zIndex'>) => void;
   updateElement: (id: string, updates: Partial<TemplateElement>) => void;
@@ -52,6 +53,7 @@ interface EditorState {
   saveToHistory: () => void;
   reorderElements: (fromIndex: number, toIndex: number) => void;
   reset: () => void;
+  setThumbnail: (dataUrl: string) => void;
 }
 
 const initialTemplateProperties: TemplateProperties = {
@@ -72,6 +74,7 @@ export const useEditorStore = create(
   templateProperties: initialTemplateProperties,
   history: [[]],
   historyIndex: 0,
+  thumbnail: undefined,
 
   addElement: (element) => {
     // Only generate ID on the client to avoid hydration issues
@@ -190,5 +193,7 @@ export const useEditorStore = create(
       historyIndex: 0,
     });
   },
+
+  setThumbnail: (dataUrl) => set({ thumbnail: dataUrl }),
 }), { name: 'EditorStore' })
 );

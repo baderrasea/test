@@ -1,6 +1,78 @@
 import React from 'react';
-import { Stage, Layer, Rect, Text, Group } from 'react-konva';
+import { Stage, Layer, Rect, Text, Group, Image as KonvaImage } from 'react-konva';
+import useImage from 'use-image';
 import { useEditorStore } from '@/store/editorStore';
+
+const BackgroundImage = ({ src, width, height }: { src: string; width: number; height: number }) => {
+  const [image] = useImage(src);
+  return image ? <KonvaImage image={image} width={width} height={height} listening={false} /> : null;
+};
+
+const ImageElementKonva = ({ el, isSelected, rotation, selectElement, updateElement }) => {
+  const [img] = useImage(el.properties.src || '', 'anonymous');
+  const fill = isSelected ? '#d1fae5' : '#f0fdf4';
+  const stroke = isSelected ? '#10b981' : '#6ee7b7';
+  const borderWidth = isSelected ? 3 : 1;
+  const shadowBlur = isSelected ? 10 : 4;
+  const shadowColor = isSelected ? '#2563eb' : '#cbd5e1';
+  const shadowOpacity = isSelected ? 0.4 : 0.15;
+  const textColor = '#222';
+  return (
+    <Group
+      key={el.id}
+      x={el.x}
+      y={el.y}
+      rotation={rotation}
+      draggable={!el.isLocked}
+      onClick={() => selectElement(el.id)}
+      onTap={() => selectElement(el.id)}
+      onDragEnd={e => updateElement(el.id, { x: e.target.x(), y: e.target.y() })}
+      onTransformEnd={e => {
+        const node = e.target;
+        updateElement(el.id, {
+          x: node.x(),
+          y: node.y(),
+          width: node.width(),
+          height: node.height(),
+          properties: {
+            ...el.properties,
+            rotation: node.rotation(),
+          },
+        });
+      }}
+    >
+      <Rect
+        width={el.width}
+        height={el.height}
+        fill={fill}
+        stroke={stroke}
+        strokeWidth={borderWidth}
+        cornerRadius={10}
+        shadowBlur={shadowBlur}
+        shadowColor={shadowColor}
+        shadowOpacity={shadowOpacity}
+        opacity={el.isVisible === false ? 0.3 : 1}
+      />
+      {img ? (
+        <KonvaImage
+          image={img}
+          width={el.width}
+          height={el.height}
+        />
+      ) : (
+        <Text
+          text={el.properties.label || 'صورة'}
+          width={el.width}
+          height={el.height}
+          align="center"
+          verticalAlign="middle"
+          fontSize={el.properties.fontSize || 20}
+          fill={textColor}
+        />
+      )}
+    </Group>
+  );
+};
 
 const TemplateCanvas: React.FC = () => {
   const {
@@ -77,9 +149,28 @@ const TemplateCanvas: React.FC = () => {
               onMouseDown={handleStageMouseDown}
             >
               <Layer>
+                {templateProperties.backgroundImage && (
+                  <BackgroundImage
+                    src={templateProperties.backgroundImage}
+                    width={templateProperties.canvasWidth || 750}
+                    height={templateProperties.canvasHeight || 550}
+                  />
+                )}
                 {elements.map((el) => {
                   const isSelected = selectedElementId === el.id;
                   const rotation = el.properties.rotation || 0;
+                  if (el.type === 'image') {
+                    return (
+                      <ImageElementKonva
+                        key={el.id}
+                        el={el}
+                        isSelected={isSelected}
+                        rotation={rotation}
+                        selectElement={selectElement}
+                        updateElement={updateElement}
+                      />
+                    );
+                  }
                   let fill = '#f3f4f6';
                   let stroke = '#bbb';
                   let textColor = '#222';
@@ -94,9 +185,6 @@ const TemplateCanvas: React.FC = () => {
                   } else if (el.type === 'date') {
                     fill = isSelected ? '#fef9c3' : '#fefce8';
                     stroke = isSelected ? '#f59e42' : '#fde68a';
-                  } else if (el.type === 'image') {
-                    fill = isSelected ? '#d1fae5' : '#f0fdf4';
-                    stroke = isSelected ? '#10b981' : '#6ee7b7';
                   } else if (el.type === 'dropdown') {
                     fill = isSelected ? '#fef3c7' : '#fff7ed';
                     stroke = isSelected ? '#fbbf24' : '#fde68a';

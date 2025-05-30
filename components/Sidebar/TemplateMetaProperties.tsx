@@ -1,52 +1,19 @@
 "use client";
 
-import React, { useRef, useState, DragEvent, ChangeEvent } from "react";
+import React from "react";
 import { useEditorStore } from "@/store/editorStore";
 import LabeledInput from "./LabeledInput";
 import LabeledSelect from "./LabeledSelect";
 import LabeledCheckbox from "./LabeledCheckbox";
-import { Upload } from "lucide-react";
 import TitleWithLines from "./TitleWithLines ";
+import LabeledImageInput from "./LabeledImageInput";
 
 const TemplateMetaProperties: React.FC = () => {
   const { templateProperties, updateTemplateProperties } = useEditorStore();
-  const [preview, setPreview] = useState<string>(templateProperties.backgroundImage || "");
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFiles = (files: FileList) => {
-    const file = files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const result = reader.result as string;
-      setPreview(result);
-      updateTemplateProperties({ backgroundImage: result }); // Store image in Zustand
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const onDrop = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    handleFiles(e.dataTransfer.files);
-  };
-
-  const onDragOver = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  const onClickUpload = () => {
-    fileInputRef.current?.click();
-  };
-
-  const onFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      handleFiles(e.target.files);
-    }
-  };
 
   return (
     <div className="space-y-4">
-        <TitleWithLines title="عامه" />
+      <TitleWithLines title="عامه" />
       <LabeledInput
         id="title"
         label="العنوان"
@@ -54,7 +21,6 @@ const TemplateMetaProperties: React.FC = () => {
         onChange={(e) => updateTemplateProperties({ title: e.target.value })}
         placeholder="عنوان القالب"
       />
-
       <LabeledSelect
         id="type"
         label="النوع"
@@ -67,7 +33,6 @@ const TemplateMetaProperties: React.FC = () => {
           { value: "Certificate", label: "شهادة" },
         ]}
       />
-
       <LabeledInput
         id="users"
         label="المستخدمون"
@@ -75,8 +40,7 @@ const TemplateMetaProperties: React.FC = () => {
         onChange={(e) => updateTemplateProperties({ users: e.target.value })}
         placeholder="المستخدمون المستهدفون"
       />
-        <TitleWithLines title="الصفحة" />
-
+      <TitleWithLines title="الصفحة" />
       <LabeledSelect
         id="pageSize"
         label="حجم الصفحة"
@@ -89,7 +53,6 @@ const TemplateMetaProperties: React.FC = () => {
           { value: "Legal", label: "Legal" },
         ]}
       />
-
       <LabeledCheckbox
         id="orientation"
         label="الاتجاه الأفقي"
@@ -100,7 +63,6 @@ const TemplateMetaProperties: React.FC = () => {
           })
         }
       />
-
       <LabeledSelect
         id="canvasSize"
         label="حجم مساحة العمل"
@@ -116,40 +78,11 @@ const TemplateMetaProperties: React.FC = () => {
           { value: "1200x800", label: "عريض 1200x800" },
         ]}
       />
-
-      <div>
-        <p className="text-sm-medium text-[#535862] font-expo-arabic text-right block mb-2">
-          صورة الخلفية
-        </p>
-        <div
-          className="relative mt-1 flex items-center justify-center w-full h-40 border-2 border-dashed border-[#E0E0E0] rounded-lg bg-white cursor-pointer overflow-hidden"
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          onClick={onClickUpload}
-        >
-          {preview ? (
-            <img
-              src={preview}
-              alt="Background Preview"
-              className="object-cover w-full h-full"
-            />
-          ) : (
-            <div className="flex flex-col items-center justify-center">
-              <Upload className="w-8 h-8 text-gray-400 mb-2" />
-              <p className="text-sm text-gray-500 text-center">
-                اسحب صورة هنا أو اضغط للاختيار
-              </p>
-            </div>
-          )}
-          <input
-            type="file"
-            accept="image/*"
-            ref={fileInputRef}
-            className="hidden"
-            onChange={onFileChange}
-          />
-        </div>
-      </div>
+      <LabeledImageInput
+        label="صورة الخلفية"
+        value={templateProperties.backgroundImage}
+        onChange={(img) => updateTemplateProperties({ backgroundImage: img })}
+      />
     </div>
   );
 };

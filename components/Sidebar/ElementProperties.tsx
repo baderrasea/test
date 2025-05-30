@@ -4,12 +4,15 @@ import React from "react";
 import { useEditorStore } from "@/store/editorStore";
 import LabeledInput from "./LabeledInput";
 import LabeledCheckbox from "./LabeledCheckbox";
+import LabeledImageInput from "./LabeledImageInput";
 
 const ElementProperties: React.FC = () => {
   const { selectedElementId, elements, updateElement } = useEditorStore();
   const selectedElement = elements.find((el) => el.id === selectedElementId);
 
   if (!selectedElement) return null;
+
+  const isImageElement = selectedElement.type === "image";
 
   return (
     <div className="space-y-4">
@@ -41,7 +44,20 @@ const ElementProperties: React.FC = () => {
         }
         placeholder="النص التوضيحي"
       />
-      
+      {isImageElement && (
+        <LabeledImageInput
+          label="صورة العنصر"
+          value={selectedElement.properties.src}
+          onChange={(img) =>
+            updateElement(selectedElement.id, {
+              properties: {
+                ...selectedElement.properties,
+                src: img,
+              },
+            })
+          }
+        />
+      )}
       <div className="grid grid-cols-1 gap-2">
         <LabeledInput
           id="width"
@@ -68,18 +84,18 @@ const ElementProperties: React.FC = () => {
           placeholder="الارتفاع"
         />
         <LabeledCheckbox
-        id="required"
-        label="تعيين كافتراضي"
-        checked={selectedElement.properties.required || false}
-        onChange={(checked) =>
-          updateElement(selectedElement.id, {
-            properties: {
-              ...selectedElement.properties,
-              required: checked,
-            },
-          })
-        }
-      />
+          id="required"
+          label="تعيين كافتراضي"
+          checked={selectedElement.properties.required || false}
+          onChange={(checked) =>
+            updateElement(selectedElement.id, {
+              properties: {
+                ...selectedElement.properties,
+                required: checked,
+              },
+            })
+          }
+        />
       </div>
     </div>
   );

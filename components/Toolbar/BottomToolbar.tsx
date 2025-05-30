@@ -1,10 +1,11 @@
 // src/components/BottomToolbar.tsx
 "use client";
 
-import React, { MouseEvent } from "react";
+import React, { MouseEvent, useState } from "react";
 import { useEditorStore } from "@/store/editorStore";
 import { toast } from "sonner";
 import Image from "next/image";
+import { useCanvasScreenshot } from "@/components/Canvas/useCanvasScreenshot";
 
 type Action = {
   key: string;
@@ -15,7 +16,6 @@ type Action = {
   hoverText?: string;
 };
 
-const ICON_SIZE = 24;
 const BUTTON_SIZE = 44;
 const BASE_BUTTON_CLASSES = `
   flex items-center justify-center
@@ -25,26 +25,43 @@ const BASE_BUTTON_CLASSES = `
 `;
 
 const BottomToolbar: React.FC = () => {
-  const { undo, redo, reset, history, historyIndex, elements } =
-    useEditorStore();
-
+  const { undo, redo, reset, history, historyIndex, elements, setThumbnail, thumbnail } = useEditorStore();
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
+  const takeScreenshot = useCanvasScreenshot();
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewImg, setPreviewImg] = useState<string | undefined>(undefined);
+  const [editMode, setEditMode] = useState(true); // true = edit, false = preview
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    const dataUrl = await takeScreenshot();
+    if (dataUrl) {
+      setThumbnail(dataUrl);
+      const a = document.createElement('a');
+      a.href = dataUrl;
+      a.download = 'template-thumbnail.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
     toast.success("تم حفظ القالب بنجاح!");
     console.log("Saving template with elements:", elements);
   };
 
-  const handleReset = () => {
-    if (elements.length === 0) return;
-    const confirmed = window.confirm(
-      "هل أنت متأكد من الرغبة في إعادة التعيين؟ سيؤدي هذا إلى حذف جميع العناصر."
-    );
-    if (confirmed) {
-      reset();
-      toast.info("تم إعادة تعيين القالب");
+  const handlePreview = async () => {
+    setEditMode(false);
+    setPreviewOpen(true);
+    if (thumbnail) {
+      setPreviewImg(thumbnail);
+    } else {
+      const dataUrl = await takeScreenshot();
+      setPreviewImg(dataUrl);
     }
+  };
+
+  const handleEdit = () => {
+    setEditMode(true);
+    setPreviewOpen(false);
   };
 
   const actions: Action[] = [
@@ -67,16 +84,16 @@ const BottomToolbar: React.FC = () => {
     {
       key: "edit",
       iconPath: "/assets/icons/builder/Vector (Stroke)-1.svg",
-      onClick: () => { },
-      hoverBg: "hover:bg-[#0071CB]",
-      hoverText: "hover:text-black",
+      onClick: handleEdit,
+      hoverBg: editMode ? "bg-[#0071CB] text-white" : "hover:bg-[#0071CB] hover:text-white",
+      hoverText: editMode ? "text-white" : "hover:text-white",
     },
     {
       key: "view",
       iconPath: "/assets/icons/builder/eye.svg",
-      onClick: () => { },
-      hoverBg: "hover:bg-[#0071CB]",
-      hoverText: "hover:text-white",
+      onClick: handlePreview,
+      hoverBg: !editMode ? "bg-[#0071CB] text-white" : "hover:bg-[#0071CB] hover:text-white",
+      hoverText: !editMode ? "text-white" : "hover:text-white",
     },
     {
       key: "save",
@@ -88,7 +105,7 @@ const BottomToolbar: React.FC = () => {
     {
       key: "reset",
       iconPath: "/assets/icons/builder/cross.svg",
-      onClick: handleReset,
+      onClick: reset,
       disabled: elements.length === 0,
       hoverBg: "hover:bg-red-300",
       hoverText: "hover:text-white",
@@ -98,16 +115,57 @@ const BottomToolbar: React.FC = () => {
   const stopDrag = (e: MouseEvent) => e.stopPropagation();
 
   return (
-    <div
-      className="
-        fixed bottom-5 left-1/2 transform -translate-x-1/2
-        bg-white/90 backdrop-blur-sm shadow-lg rounded-[10px]
-        flex items-center gap-[10px] px-[20px] py-[5px]
-        z-50
-      "
-    >
-      {actions.map(
-        ({ key, iconPath, onClick, disabled, hoverBg, hoverText }) => (
+    <>
+      {/* Preview Modal */}
+      {previewOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+          onClick={() => setPreviewOpen(false)}
+        >
+          <div
+            className="bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center relative min-w-[600px] min-h-[400px]"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Removed close icon button */}
+            <div className="flex-1 flex items-center justify-center w-full h-[400px]">
+              {previewImg ? (
+                <Image
+                  src={previewImg}
+                  alt="معاينة القالب"
+                  className="object-contain w-full h-full rounded-xl border"
+                  style={{ background: '#fff' }}
+                  width={600}
+                  height={400}
+                />
+              ) : (
+                <div className="text-gray-400 text-lg">جاري التحميل...</div>
+              )}
+            </div>
+            {/* BottomToolbar inside modal for actions */}
+            <div className="w-full flex justify-center mt-4">
+              <div className="w-fit">
+                {/* Render toolbar actions inside modal, except preview */}
+                {actions.filter(a => a.key !== 'view').map(({ key, iconPath, onClick, disabled, hoverBg, hoverText }) => (
+                  <button
+                    key={key}
+                    onClick={onClick}
+                    disabled={disabled}
+                    onPointerDown={stopDrag}
+                    className={`inline-flex items-center justify-center w-[44px] h-[44px] mx-1 rounded-[10px] border border-[#E5E7EB] bg-[#EBEEF3] transition ${disabled ? "opacity-40 cursor-not-allowed" : ""} ${hoverBg ?? ""} ${hoverText ?? ""}`}
+                  >
+                    <Image src={iconPath} alt={`${key} icon`} width={24} height={24} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Main Toolbar */}
+      <div
+        className="fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-white/90 backdrop-blur-sm shadow-lg rounded-[10px] flex items-center gap-[10px] px-[20px] py-[5px] z-50"
+      >
+        {actions.map(({ key, iconPath, onClick, disabled, hoverBg, hoverText }) => (
           <React.Fragment key={key}>
             <button
               onClick={onClick}
@@ -117,14 +175,10 @@ const BottomToolbar: React.FC = () => {
                 ${BASE_BUTTON_CLASSES}
                 ${disabled ? "opacity-40 cursor-not-allowed" : ""}
                 ${hoverBg ?? ""} ${hoverText ?? ""}
+                ${key === 'view' && previewOpen ? 'bg-[#0071CB] text-white' : ''}
               `}
             >
-              <Image
-                src={iconPath}
-                alt={`${key} icon`}
-                width={ICON_SIZE}
-                height={ICON_SIZE}
-              />
+              <Image src={iconPath} alt={`${key} icon`} width={24} height={24} />
             </button>
             {key === "view" && (
               <div
@@ -133,9 +187,9 @@ const BottomToolbar: React.FC = () => {
               ></div>
             )}
           </React.Fragment>
-        )
-      )}
-    </div>
+        ))}
+      </div>
+    </>
   );
 };
 
