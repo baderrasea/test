@@ -69,7 +69,7 @@ const ElementsPanel: React.FC = () => {
   };
 
   return (
-    <div className="w-80 bg-white p-5 gap-5 rounded-[20px] min-w-[400px] ">
+    <div className="w-80 bg-white h-full p-5 gap-5 rounded-[20px] min-w-[400px] ">
       <Tabs defaultValue="elements" className="h-full">
         <TabsList
           className="grid grid-cols-2 h-fit w-full gap-2 bg-[#F8F8F8] border border-[#E5E7EB] p-[10px] rounded-lg"
