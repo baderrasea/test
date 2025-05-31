@@ -104,6 +104,7 @@ const ImageElementKonva = React.forwardRef<Konva.Group, ImageElementKonvaProps>(
     );
   }
 );
+ImageElementKonva.displayName = "ImageElementKonva";
 
 const TemplateCanvas: React.FC = () => {
   const {
