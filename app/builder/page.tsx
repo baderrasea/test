@@ -90,7 +90,7 @@ const Builder = () => {
 
     return (
       <DraggableElement
-        id={activeDrag.id}
+        id={String(activeDrag.id)}
         type={activeDrag.data.current.type}
         label={elementLabels[activeDrag.data.current.type as keyof typeof elementLabels]}
       />
