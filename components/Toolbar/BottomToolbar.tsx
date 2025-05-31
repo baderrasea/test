@@ -82,6 +82,8 @@ const BottomToolbar: React.FC = () => {
       hoverText: "hover:text-white",
     },
     {
+      disabled: editMode,
+
       key: "edit",
       iconPath: "/assets/icons/builder/pen-tool-2.svg",
       onClick: handleEdit,
@@ -123,11 +125,10 @@ const BottomToolbar: React.FC = () => {
           onClick={() => setPreviewOpen(false)}
         >
           <div
-            className=""
+            className="bg-white rounded-xl p-4 shadow-xl max-w-[90vw] max-h-[90vh]"
             onClick={e => e.stopPropagation()}
           >
-            {/* Removed close icon button */}
-            <div className="flex-1 flex items-center justify-center w-full h-[400px]">
+            <div className="flex items-center justify-center w-full h-[400px]">
               {previewImg ? (
                 <Image
                   src={previewImg}
@@ -141,6 +142,7 @@ const BottomToolbar: React.FC = () => {
                 <div className="text-gray-400 text-lg">جاري التحميل...</div>
               )}
             </div>
+
             {/* BottomToolbar inside modal for actions */}
             <div className="w-full flex justify-center mt-4">
               <div className="w-fit">
@@ -189,9 +191,9 @@ const BottomToolbar: React.FC = () => {
             )}
           </React.Fragment>
         ))}
-              {/* <Image src="/assets/icons/builder/eye.svg" alt="view icon" width={24} height={24} /> */}
+        {/* <Image src="/assets/icons/builder/eye.svg" alt="view icon" width={24} height={24} /> */}
 
-       
+
       </div>
     </>
   );
