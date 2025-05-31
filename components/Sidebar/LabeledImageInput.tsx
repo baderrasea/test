@@ -71,10 +71,11 @@ const LabeledImageInput: React.FC<LabeledImageInputProps> = ({
                 onClick={onClickUpload}
             >
                 {preview ? (
-                    <img
+                        <Image
                         src={preview}
                         alt="Preview"
                         className={previewClassName}
+                        layout="fill"
                     />
                 ) : (
                     <>
@@ -89,15 +90,15 @@ const LabeledImageInput: React.FC<LabeledImageInputProps> = ({
                          <div className="flex">
 
 
-                            <p className="text-sm text-primary-600 font-medium">
-                                اضغط هنا لرفع الصورة
+                            <p className="text-sm text-[#0071CB] font-medium">
+                                 اضغط هنا لرفع الصورة
                             </p>
                             <p className="text-sm text-gray-500">
                                 أو قم بالسحب والإفلات
                             </p>
                         </div>
                         <p className="text-xs text-gray-400 mt-1">
-                            لا تتجاوز 5MB. JPG, PNG, SVG
+                        JPG, PNG, SVG      لا تتجاوز 5MB
                         </p>
                     </>
                 )}

@@ -18,7 +18,7 @@ type Action = {
 
 const BUTTON_SIZE = 44;
 const BASE_BUTTON_CLASSES = `
-  flex items-center justify-center
+  flex items-center justify-center 
   w-[${BUTTON_SIZE}px] h-[${BUTTON_SIZE}px]
   bg-[#EBEEF3] border border-[#E5E7EB]
   rounded-[10px] transition
@@ -83,7 +83,7 @@ const BottomToolbar: React.FC = () => {
     },
     {
       key: "edit",
-      iconPath: "/assets/icons/builder/Vector (Stroke)-1.svg",
+      iconPath: "/assets/icons/builder/pen-tool-2.svg",
       onClick: handleEdit,
       hoverBg: editMode ? "bg-[#0071CB] text-white" : "hover:bg-[#0071CB] hover:text-white",
       hoverText: editMode ? "text-white" : "hover:text-white",
@@ -123,7 +123,7 @@ const BottomToolbar: React.FC = () => {
           onClick={() => setPreviewOpen(false)}
         >
           <div
-            className="bg-white rounded-2xl shadow-xl p-6 flex flex-col items-center relative min-w-[600px] min-h-[400px]"
+            className=""
             onClick={e => e.stopPropagation()}
           >
             {/* Removed close icon button */}
@@ -145,13 +145,14 @@ const BottomToolbar: React.FC = () => {
             <div className="w-full flex justify-center mt-4">
               <div className="w-fit">
                 {/* Render toolbar actions inside modal, except preview */}
-                {actions.filter(a => a.key !== 'view').map(({ key, iconPath, onClick, disabled, hoverBg, hoverText }) => (
+                {actions.map(({ key, iconPath, onClick, disabled, hoverBg, hoverText }) => (
                   <button
                     key={key}
                     onClick={onClick}
                     disabled={disabled}
                     onPointerDown={stopDrag}
-                    className={`inline-flex items-center justify-center w-[44px] h-[44px] mx-1 rounded-[10px] border border-[#E5E7EB] bg-[#EBEEF3] transition ${disabled ? "opacity-40 cursor-not-allowed" : ""} ${hoverBg ?? ""} ${hoverText ?? ""}`}
+                    className={`inline-flex items-center justify-center w-[44px] h-[44px] mx-1 rounded-[10px] border
+                       border-[#E5E7EB] bg-[#EBEEF3] transition ${disabled ? "opacity-40 cursor-not-allowed" : ""} ${hoverBg ?? ""} ${hoverText ?? ""}`}
                   >
                     <Image src={iconPath} alt={`${key} icon`} width={24} height={24} />
                   </button>
@@ -188,6 +189,9 @@ const BottomToolbar: React.FC = () => {
             )}
           </React.Fragment>
         ))}
+              {/* <Image src="/assets/icons/builder/eye.svg" alt="view icon" width={24} height={24} /> */}
+
+       
       </div>
     </>
   );
