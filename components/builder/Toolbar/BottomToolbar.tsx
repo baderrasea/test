@@ -125,7 +125,7 @@ const BottomToolbar: React.FC = () => {
           onClick={() => setPreviewOpen(false)}
         >
           <div
-            className="bg-white rounded-xl p-4 shadow-xl max-w-[90vw] max-h-[90vh]"
+            className=" rounded-xl p-4 max-w-[90vw] max-h-[90vh]"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-center w-full h-[400px]">
