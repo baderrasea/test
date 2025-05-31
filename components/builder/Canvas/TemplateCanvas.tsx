@@ -314,53 +314,55 @@ const TemplateCanvas: React.FC = () => {
                 }
 
                 return (
-                  <Group
-                    key={el.id}
-                    x={el.x}
-                    y={el.y}
-                    rotation={rotation}
-                    draggable={!el.isLocked}
-                    onClick={() => selectElement(el.id)}
-                    onTap={() => selectElement(el.id)}
-                    onDragEnd={(e) =>
-                      updateElement(el.id, { x: e.target.x(), y: e.target.y() })
-                    }
-                    onTransformEnd={(e) => {
-                      const node = e.target as Konva.Group;
-                      updateElement(el.id, {
-                        x: node.x(),
-                        y: node.y(),
-                        width: node.width(),
-                        height: node.height(),
-                        properties: {
-                          ...el.properties,
-                          rotation: node.rotation(),
-                        },
-                      });
-                    }}
-                  >
-                    <Rect
-                      width={el.width}
-                      height={el.height}
-                      fill={fill}
-                      stroke={stroke}
-                      strokeWidth={borderWidth}
-                      cornerRadius={10}
-                      shadowBlur={shadowBlur}
-                      shadowColor={shadowColor}
-                      shadowOpacity={shadowOpacity}
-                      opacity={el.isVisible === false ? 0.3 : 1}
-                    />
-                    <Text
-                      text={el.properties.label || ""}
-                      width={el.width}
-                      height={el.height}
-                      align="center"
-                      verticalAlign="middle"
-                      fontSize={el.properties.fontSize || 20}
-                      fill={textColor}
-                    />
-                  </Group>
+                <Group
+  key={el.id}
+  x={el.x}
+  y={el.y}
+  rotation={rotation}
+  draggable={!el.isLocked}
+  visible={el.isVisible}           // ← hide if isVisible is false
+  onClick={() => selectElement(el.id)}
+  onTap={() => selectElement(el.id)}
+  onDragEnd={(e) =>
+    updateElement(el.id, { x: e.target.x(), y: e.target.y() })
+  }
+  onTransformEnd={(e) => {
+    const node = e.target as Konva.Group;
+    updateElement(el.id, {
+      x: node.x(),
+      y: node.y(),
+      width: node.width(),
+      height: node.height(),
+      properties: {
+        ...el.properties,
+        rotation: node.rotation(),
+      },
+    });
+  }}
+>
+  <Rect
+    width={el.width}
+    height={el.height}
+    fill={fill}
+    stroke={stroke}
+    strokeWidth={borderWidth}
+    cornerRadius={10}
+    shadowBlur={shadowBlur}
+    shadowColor={shadowColor}
+    shadowOpacity={shadowOpacity}
+    // you can remove the opacity prop now, since invisible hides everything
+    // opacity={el.isVisible === false ? 0.3 : 1}
+  />
+  <Text
+    text={el.properties.label || ""}
+    width={el.width}
+    height={el.height}
+    align="center"
+    verticalAlign="middle"
+    fontSize={el.properties.fontSize || 20}
+    fill={textColor}
+  />
+</Group>
                 );
               })}
             </Layer>

@@ -5,7 +5,7 @@ import React, { MouseEvent, useState } from "react";
 import { useEditorStore } from "@/store/editorStore";
 import { toast } from "sonner";
 import Image from "next/image";
-import { useCanvasScreenshot } from "@/components/Canvas/useCanvasScreenshot";
+import { useCanvasScreenshot } from "@/components/builder/Canvas/useCanvasScreenshot";
 
 type Action = {
   key: string;
