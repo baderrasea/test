@@ -32,6 +32,7 @@ export interface TemplateProperties {
   backgroundImage?: string; // Add backgroundImage to store image data
   canvasWidth?: number;
   canvasHeight?: number;
+  showRuler?: boolean; // NEW: show/hide ruler lines
 }
 
 interface EditorState {
@@ -65,6 +66,7 @@ const initialTemplateProperties: TemplateProperties = {
   backgroundImage: '', // Initialize backgroundImage
   canvasWidth: 750,
   canvasHeight: 550,
+  showRuler: false, // NEW: default to not showing ruler
 };
 
 export const useEditorStore = create(

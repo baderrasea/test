@@ -47,12 +47,12 @@ const ElementProperties: React.FC = () => {
       {isImageElement && (
         <LabeledImageInput
           label="صورة العنصر"
-          value={selectedElement.properties.src}
+          value={selectedElement.properties.value}
           onChange={(img) =>
             updateElement(selectedElement.id, {
               properties: {
                 ...selectedElement.properties,
-                src: img,
+                value: img,
               },
             })
           }

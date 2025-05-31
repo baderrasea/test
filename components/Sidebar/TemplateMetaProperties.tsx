@@ -40,8 +40,18 @@ const TemplateMetaProperties: React.FC = () => {
         onChange={(e) => updateTemplateProperties({ users: e.target.value })}
         placeholder="المستخدمون المستهدفون"
       />
+      <LabeledCheckbox
+        id="orientation"
+        label="تعيين كافتراضي"
+        checked={templateProperties.orientation === "Landscape"}
+        onChange={(checked) =>
+          updateTemplateProperties({
+            orientation: checked ? "Landscape" : "Portrait",
+          })
+        }
+      />
       <TitleWithLines title="الصفحة" />
-      <LabeledSelect
+      {/* <LabeledSelect
         id="pageSize"
         label="حجم الصفحة"
         value={templateProperties.pageSize}
@@ -52,10 +62,10 @@ const TemplateMetaProperties: React.FC = () => {
           { value: "Letter", label: "Letter" },
           { value: "Legal", label: "Legal" },
         ]}
-      />
+      /> */}
       <LabeledCheckbox
         id="orientation"
-        label="الاتجاه الأفقي"
+        label="تعيين كافتراضي"
         checked={templateProperties.orientation === "Landscape"}
         onChange={(checked) =>
           updateTemplateProperties({
@@ -65,7 +75,7 @@ const TemplateMetaProperties: React.FC = () => {
       />
       <LabeledSelect
         id="canvasSize"
-        label="حجم مساحة العمل"
+        label="حجم الصفحة"
         value={`${templateProperties.canvasWidth}x${templateProperties.canvasHeight}`}
         onChange={(value) => {
           const [w, h] = value.split('x').map(Number);
@@ -73,10 +83,18 @@ const TemplateMetaProperties: React.FC = () => {
         }}
         options={[
           { value: "750x550", label: "افتراضي (A4) 750x550" },
-          { value: "900x600", label: "كبير 900x600" },
           { value: "600x400", label: "صغير 600x400" },
+          { value: "900x600", label: "كبير 900x600" },
           { value: "1200x800", label: "عريض 1200x800" },
         ]}
+      />
+      <LabeledCheckbox
+        id="showRuler"
+        label="اظهار المسطرة"
+        checked={!!templateProperties.showRuler}
+        onChange={(checked) =>
+          updateTemplateProperties({ showRuler: checked })
+        }
       />
       <LabeledImageInput
         label="صورة الخلفية"

@@ -3,7 +3,7 @@ import { Group, Rect, Text, Image as KonvaImage } from 'react-konva';
 import useImage from 'use-image';
 
 const ImageElementKonva = ({ el, isSelected, rotation, selectElement, updateElement }) => {
-  const [img] = useImage(el.properties.src || '', 'anonymous');
+  const [img] = useImage((el.properties.value as string) || '', 'anonymous');
   const fill = isSelected ? '#d1fae5' : '#f0fdf4';
   const stroke = isSelected ? '#10b981' : '#6ee7b7';
   const borderWidth = isSelected ? 3 : 1;
